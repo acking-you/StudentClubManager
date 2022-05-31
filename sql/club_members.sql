@@ -1,12 +1,36 @@
-create table student_system.club_members
-(
-    id bigint unsigned auto_increment
-        primary key,
-    student_id varchar(20) not null,
-    name varchar(50) not null,
-    sex enum('ÄÐ', 'Å®') charset utf8mb4 default 'ÄÐ' not null,
-    age bigint unsigned not null,
-    major varchar(100) not null,
-    interest varchar(100) not null
-);
+/*
+ Navicat Premium Data Transfer
 
+ Source Server         : MySql
+ Source Server Type    : MySQL
+ Source Server Version : 50737
+ Source Host           : localhost:3306
+ Source Schema         : student_system
+
+ Target Server Type    : MySQL
+ Target Server Version : 50737
+ File Encoding         : 65001
+
+ Date: 01/06/2022 01:48:07
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for club_members
+-- ----------------------------
+DROP TABLE IF EXISTS `club_members`;
+CREATE TABLE `club_members`  (
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `student_id` varchar(20) CHARACTER SET gbk COLLATE gbk_chinese_ci NOT NULL,
+  `name` varchar(50) CHARACTER SET gbk COLLATE gbk_chinese_ci NOT NULL,
+  `sex` enum('ç”·','å¥³') CHARACTER SET gbk COLLATE gbk_chinese_ci NOT NULL DEFAULT 'ç”·',
+  `age` bigint(20) UNSIGNED NOT NULL,
+  `major` varchar(100) CHARACTER SET gbk COLLATE gbk_chinese_ci NOT NULL,
+  `interest` varchar(100) CHARACTER SET gbk COLLATE gbk_chinese_ci NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `student_id`(`student_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;

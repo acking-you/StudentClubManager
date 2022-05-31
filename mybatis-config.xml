@@ -8,7 +8,7 @@
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/student_system?characterEncoding=gbk"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/student_system?characterEncoding=gbk&amp;allowMultiQueries=true"/>
                 <property name="username" value="root"/>
                 <property name="password" value="08898247"/>
             </dataSource>
@@ -18,6 +18,9 @@
     <mappers>
         <mapper class="model.mapper.StudentMapper"/>
         <mapper class="model.mapper.UserMapper"/>
+        <mapper class="model.mapper.ClubMapper"/>
+        <mapper class="model.mapper.ClubMemberMapper"/>
+        <mapper class="model.mapper.ClubRelationMapper"/>
         <!--    这里用的是url，也可以使用其他类型，我们会在后面讲解    -->
     </mappers>
 </configuration>
