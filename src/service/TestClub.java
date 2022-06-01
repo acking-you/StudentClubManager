@@ -27,4 +27,12 @@ public class TestClub {
     public void TestQueryClubByMemberId(){
         List<Club> l = ClubService.QueryClubByMemberId(1);
     }
+
+    @Test
+    public void TestQueryAllClub(){
+        List<Club> list = ClubService.QueryAllClub();
+        for (Club i : list) {
+            System.out.println(i);
+        }
+    }
 }

@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class AddStudentInfo extends JFrame implements ActionListener, ItemListener {
+public class AddMemberInfo extends JFrame implements ActionListener, ItemListener {
     private static JTextField SidText, SnameText, SbirthdayText,
             SphoneText;//1.学生id输入框，
     private static ButtonGroup SexButton;//创建按钮组
@@ -36,7 +36,7 @@ public class AddStudentInfo extends JFrame implements ActionListener, ItemListen
     private JPanel checkbox;//创建兴趣复选框面板
     private Font font1, font2, font3;//字体设置
 
-    public AddStudentInfo() {
+    public AddMemberInfo() {
         if (Student.students == null) {
             ShowMessageUtil.winMessage("数据库初始化未完成！");
             System.exit(0);
@@ -94,13 +94,11 @@ public class AddStudentInfo extends JFrame implements ActionListener, ItemListen
     }
 
     public static void main(String[] args) {
-        new AddStudentInfo();
+        new AddMemberInfo();
     }
 
     private void AddStudentInfoInterface() {
-        // TODO Auto-generated method stub
         setLayout(null);//以绝对布局的方式布局
-
         font1 = new Font("楷体", 0, 20);
         font3 = new Font("Consolas", 0, 18);
         //设置各个组件的位置，字体

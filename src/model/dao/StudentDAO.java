@@ -108,13 +108,10 @@ public class StudentDAO implements Closeable {
      * @throws IOException
      */
     static public List<Student> ReadFromExcel(String fileName) throws IOException {
-
         InputStream inputStream = new FileInputStream(fileName);
-
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook(inputStream);
         List<Student> list = new ArrayList<>();
         int size = hssfWorkbook.getNumberOfSheets();
-
         for (int numSheet = 0; numSheet < size; numSheet++) {
             HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(numSheet);
             if (hssfSheet == null)

@@ -14,6 +14,9 @@ public class ClubMemberDAO {
     private final ClubMemberMapper clubMemberMapper;
     private final ClubRelationMapper clubRelationMapper;
     private final ClubMapper clubMapper;
+
+    static ClubMemberDAO dao = null;
+
     private ClubMemberDAO(boolean autoCommit){
         sqlSession = MybatisUtil.getSession(autoCommit);
         clubMemberMapper = sqlSession.getMapper(ClubMemberMapper.class);
@@ -21,7 +24,10 @@ public class ClubMemberDAO {
         clubMapper = sqlSession.getMapper(ClubMapper.class);
     }
     public static ClubMemberDAO getInstance(){
-        return new ClubMemberDAO(false);
+        if(dao==null){
+            dao = new ClubMemberDAO(false);
+        }
+        return dao;
     }
     public void AddClubMember(int clubId, ClubMember clubMember){
         //添加成员
@@ -31,9 +37,24 @@ public class ClubMemberDAO {
         //添加多对多关系
         clubRelationMapper.addRelations(clubId,id);
         //更新社团的count
-        clubMapper.plusMemberCountById(clubId);
+        clubMapper.plusMemberCountById(clubId,1);
         sqlSession.commit();
     }
+
+    public void AddClubMemberList(int clubId,List<ClubMember> clubMemberList){
+        for(ClubMember clubMember:clubMemberList){
+            //添加成员
+            clubMemberMapper.addClubMember(clubMember);
+            //得到该成员的id
+            int id = clubMemberMapper.queryIdFromStudentId(clubMember.getStudentId());
+            //添加多对多关系
+            clubRelationMapper.addRelations(clubId,id);
+        }
+        //更新社团的count
+        clubMapper.plusMemberCountById(clubId,clubMemberList.size());
+        sqlSession.commit();
+    }
+
     public void UpdateClubMember(ClubMember clubMember){
         clubMemberMapper.updateClubMember(clubMember);
         sqlSession.commit();
@@ -51,7 +72,7 @@ public class ClubMemberDAO {
 
     //删除社团成员的同时，删除对应的社团关系
     public void DeleteClubMemberById(int clubId,int memberId){
-        clubRelationMapper.deleteRelationsByMemberId(memberId);
+        clubRelationMapper.deleteRelationsByMemberIdAndClubId(memberId,clubId);
         clubMapper.minusMemberCountById(clubId);
         clubMemberMapper.deleteClubMemberById(memberId);
         sqlSession.commit();

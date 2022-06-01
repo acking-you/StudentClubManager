@@ -11,7 +11,7 @@ import java.awt.event.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class EditStudentInfo extends JFrame implements ActionListener, ItemListener {
+public class EditMemberInfo extends JFrame implements ActionListener, ItemListener {
 
     private static JTextField SidText, SnameText, SbirthdayText,
             SphoneText;//1.学生id输入框,
@@ -32,10 +32,10 @@ public class EditStudentInfo extends JFrame implements ActionListener, ItemListe
     private JRadioButton SexButton1, SexButton2;//性别单选按钮
     private JPanel checkbox;//创建兴趣复选框面板
     private Font font1, font2;//字体设置
-    private QueryStudentInfo parent = null;
+    private QueryMemberInfo parent = null;
 
 
-    public EditStudentInfo(QueryStudentInfo info, String sid, String sname, String ssex, String sbirthday, String sprovince, String hobby, String sphone) {
+    public EditMemberInfo(QueryMemberInfo info, String sid, String sname, String ssex, String sbirthday, String sprovince, String hobby, String sphone) {
         if (Student.students == null) {
             ShowMessageUtil.winMessage("数据库初始化未完成！");
             System.exit(0);
@@ -95,7 +95,7 @@ public class EditStudentInfo extends JFrame implements ActionListener, ItemListe
     }
 
     public static void main(String[] args) {
-        EditStudentInfo editStudentInfo = new EditStudentInfo(null, "3233", null, "男", "2023-03-23", "山东", "coding", "323333333");
+        EditMemberInfo editStudentInfo = new EditMemberInfo(null, "3233", null, "男", "2023-03-23", "山东", "coding", "323333333");
     }
 
     private void EditStudentInfoInterface(String sid, String sname, String ssex, String sbirthday, String sprovince, String hobby, String sphone) {

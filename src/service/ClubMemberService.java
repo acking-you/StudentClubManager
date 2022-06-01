@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ClubMemberService {
-    public void AddClubMember(int clubId, ClubMember member)throws RuntimeException{
+    public static void AddClubMember(int clubId, ClubMember member)throws RuntimeException{
         if(!ClubService.isClubExist(clubId)){
             throw new RuntimeException("社团不存在");
         }
@@ -17,7 +17,20 @@ public class ClubMemberService {
         ClubMemberDAO.getInstance().AddClubMember(clubId,member);
     }
 
-    public void UpdateClubMember(ClubMember member)throws RuntimeException{
+    //把一堆人加入到一个社团中
+    public static void AddClubMemberList(int clubId,List<ClubMember> clubMemberList)throws RuntimeException{
+        if(!ClubService.isClubExist(clubId)){
+            throw new RuntimeException("社团不存在");
+        }
+        for(ClubMember member:clubMemberList){
+            if (checkClubMember(member) != 0) {
+                throw new RuntimeException("成员信息不合法");
+            }
+        }
+
+        ClubMemberDAO.getInstance().AddClubMemberList(clubId,clubMemberList);
+    }
+    public static void UpdateClubMember(ClubMember member)throws RuntimeException{
         if(checkClubMember(member)!=0){
             throw new RuntimeException("成员信息不合法");
         }
@@ -25,7 +38,7 @@ public class ClubMemberService {
         ClubMemberDAO.getInstance().UpdateClubMember(member);
     }
 
-    public List<ClubMember> QueryClubMemberByName(int clubId,String name)throws RuntimeException{
+    public static List<ClubMember> QueryClubMemberByName(int clubId,String name)throws RuntimeException{
         if(ClubService.checkName(name)!=0){
             throw new RuntimeException("名字不合法");
         }
@@ -35,7 +48,7 @@ public class ClubMemberService {
         return ClubMemberDAO.getInstance().QueryClubMemberByName(clubId,name);
     }
 
-    public void DeleteClubMemberById(int clubId,int id)throws RuntimeException{
+    public static void DeleteClubMemberById(int clubId,int id)throws RuntimeException{
         if (!ClubService.isClubExist(clubId)) {
             throw new RuntimeException("俱乐部不存在");
         }
@@ -46,8 +59,8 @@ public class ClubMemberService {
         ClubMemberDAO.getInstance().DeleteClubMemberById(clubId,id);
     }
 
-    public List<ClubMember> QueryClubMembersByClubId(int clubId)throws RuntimeException{
-        if (ClubService.isClubExist(clubId)){
+    public static List<ClubMember> QueryClubMembersByClubId(int clubId)throws RuntimeException{
+        if (!ClubService.isClubExist(clubId)){
             throw new RuntimeException("俱乐部不存在");
         }
 

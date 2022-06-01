@@ -1,10 +1,8 @@
 package view;
 
 import model.dao.UserDAO;
-import model.entity.Student;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import util.MD5Util;
-import util.ShowMessageUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,10 +28,6 @@ public class ModifyPasswordInfo implements ActionListener {
 
 
     public ModifyPasswordInfo() {
-        if (Student.students == null) {
-            ShowMessageUtil.winMessage("数据库初始化未完成！");
-            System.exit(0);
-        }
         this.frame.setIconImage(Toolkit.getDefaultToolkit().getImage("src/images/logo.png"));
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");// 使用windows外观

@@ -34,14 +34,13 @@ public class Login extends JFrame implements ActionListener {
     private MainMenu mainMenu = null;
 
     public Login() {
-        System.out.println("fdsfsd");
         setForeground(new Color(255, 255, 255));
         mp = new MyJPanel();
         getContentPane().add(mp);
         mp.setBounds(0, 0, 1265, 420);
         this.setResizable(false);
         this.setSize(1265, 856);
-        this.setTitle("学生信息管理系统——made by L_B__");
+        this.setTitle("社团信息管理系统——made by L_B__");
         this.setIconImage(Toolkit.getDefaultToolkit().getImage("src/images/logo.png"));
         this.setLocationRelativeTo(null);
         try {
@@ -51,7 +50,7 @@ public class Login extends JFrame implements ActionListener {
         }
 
         //=======================
-        JLabel welcome_text = new JLabel("欢迎登陆学生信息管理系统");
+        JLabel welcome_text = new JLabel("欢迎登陆社团信息系统");
 
         Font font = new Font("楷体", Font.BOLD, 40);
         welcome_text.setFont(font);

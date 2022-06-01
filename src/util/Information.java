@@ -2,7 +2,8 @@ package util;
 
 
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
-import view.AddStudentInfo;
+import view.AddClubInfo;
+import view.AddMemberInfo;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,10 +14,28 @@ public class Information extends JFrame implements ActionListener {
     private JButton button1, button2;
     private JLabel promptsentence;
     private Font font;
-    private AddStudentInfo addStudentInfo = null;
+    private AddMemberInfo addMemberInfo = null;
+    private AddClubInfo addClubInfo = null;
 
-    public Information(AddStudentInfo addStudentInfo) {
-        this.addStudentInfo = addStudentInfo;
+    public Information(AddMemberInfo addStudentInfo) {
+        this.addMemberInfo = addStudentInfo;
+        setTitle("添加成功提示框");
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage("src/images/logo.png"));
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");// 使用windows外观
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        setSize(550, 350);
+        setLocationRelativeTo(null);//将容器显示在屏幕中央
+        setStyle();
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);//点击右上角的关闭，只关闭本窗口，不影响住窗口
+        setVisible(true);//设置窗口可见
+        setResizable(true);//设置窗口大小可以改变
+    }
+
+    public Information(AddClubInfo addClubInfo) {
+        this.addClubInfo = addClubInfo;
         setTitle("添加成功提示框");
         this.setIconImage(Toolkit.getDefaultToolkit().getImage("src/images/logo.png"));
         try {
@@ -34,7 +53,7 @@ public class Information extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub
-        new Information(null);
+
     }
 
     public void setStyle() {
@@ -71,11 +90,11 @@ public class Information extends JFrame implements ActionListener {
         String cmd = e.getActionCommand();
         if (cmd.equals("是")) {
             dispose();
-            AddStudentInfo.clearText();
+            AddMemberInfo.clearText();
         } else if (cmd.equals("否")) {
             dispose();
-            if (addStudentInfo != null) {
-                addStudentInfo.setVisible(false);
+            if (addMemberInfo != null) {
+                addMemberInfo.setVisible(false);
             }
         }
     }

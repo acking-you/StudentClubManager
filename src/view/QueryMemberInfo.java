@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class QueryStudentInfo extends JFrame implements ActionListener {
+public class QueryMemberInfo extends JFrame implements ActionListener {
 
     private final JScrollPane panel;
     private final JButton next;
@@ -59,7 +59,7 @@ public class QueryStudentInfo extends JFrame implements ActionListener {
     /*
      * 窗体及表的建立
      */
-    public QueryStudentInfo() {
+    public QueryMemberInfo() {
         super("学生信息查询统计");
 //        if(Student.students==null){
 //            ShowMessageUtil.winMessage("数据库初始化未完成！");
@@ -176,39 +176,7 @@ public class QueryStudentInfo extends JFrame implements ActionListener {
         last.addActionListener(this);
         query.addActionListener(this);
         queryAll.addActionListener(this);
-        backBtn.addMouseListener(new MouseListener() {
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                setVisible(false);
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-        });
 
 
         exportExcelBtn.addMouseListener(new MouseListener() {
@@ -244,7 +212,7 @@ public class QueryStudentInfo extends JFrame implements ActionListener {
             }
 
         });
-        QueryStudentInfo info = this;
+        QueryMemberInfo info = this;
         modifyBtn.addMouseListener(new MouseListener() {
 
             @Override
@@ -263,7 +231,7 @@ public class QueryStudentInfo extends JFrame implements ActionListener {
                     String hobby = table.getValueAt(selectedRowIndex, 5).toString();
                     String phone = table.getValueAt(selectedRowIndex, 6).toString();
 
-                    EditStudentInfo editStudentInfo = new EditStudentInfo(info, sid, name, sex, birthday, province, hobby, phone);
+                    EditMemberInfo editStudentInfo = new EditMemberInfo(info, sid, name, sex, birthday, province, hobby, phone);
                 }
             }
 
@@ -402,7 +370,7 @@ public class QueryStudentInfo extends JFrame implements ActionListener {
     public static void main(String[] args) {
         // TODO Auto-generated method stub
 
-        QueryStudentInfo q = new QueryStudentInfo();
+        QueryMemberInfo q = new QueryMemberInfo();
     }
 
     /**

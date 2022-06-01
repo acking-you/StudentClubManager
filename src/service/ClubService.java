@@ -4,15 +4,27 @@ import model.dao.ClubDAO;
 import model.entity.Club;
 import util.CharacterUtil;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClubService {
-
     public static void AddClub(Club club) throws RuntimeException{
         if (checkClub(club)!=0){
             throw new RuntimeException("club参数检查出错");
         }
+        if(ClubDAO.getInstance().IsClubExist(club.getName())){
+            throw new RuntimeException("社团名字已经存在");
+        }
+
         ClubDAO.getInstance().AddClub(club);
+    }
+    public static void AddClubList(List<Club> clubList)throws RuntimeException{
+        if(clubList==null||clubList.isEmpty()){
+            throw new RuntimeException("clubList数据为空");
+        }
+        ClubDAO.getInstance().AddClubList(clubList);
     }
     public static void UpdateClub(Club club)throws RuntimeException{
         if(checkClub(club)!=0){
@@ -21,8 +33,23 @@ public class ClubService {
         if(!isClubExist(club.getId())){
             throw new RuntimeException("club不存在");
         }
+        //不是自身名称重复的情况下，更新时会名称重复，则返回错误
+        if(!ClubDAO.getInstance().IsSelfDuplicate(club.getId(),club.getName())&&ClubDAO.getInstance().IsClubExist(club.getName())){
+            throw new RuntimeException("club名称重复");
+        }
         ClubDAO.getInstance().UpdateClub(club);
     }
+
+    public static void DeleteClub(Club club) throws  RuntimeException{
+        if(checkClub(club)!=0){
+            throw new RuntimeException("club参数检查出错");
+        }
+        if(!isClubExist(club.getId())){
+            throw new RuntimeException("club不存在");
+        }
+        ClubDAO.getInstance().DeleteClub(club.getId());
+    }
+
     public static List<Club> QueryClubsByName(String name)throws RuntimeException{
         if (checkName(name) != 0) {
             throw new RuntimeException("名字不符合条件");
@@ -37,6 +64,20 @@ public class ClubService {
         return ClubDAO.getInstance().QueryClubByMemberId(memberId);
     }
 
+    public static List<Club> QueryAllClub(){
+        return ClubDAO.getInstance().QueryAllClub();
+    }
+
+    //根据order值返回按memberCount排序的结果：true顺序，false逆序
+    public static List<Club> QueryAllClubByOrder(boolean order){
+        List<Club>list = QueryAllClub();
+        if (order){
+            list.sort(Comparator.comparingInt(Club::getMemberCount));
+        }else {
+            list.sort((a,b)->b.getMemberCount()-a.getMemberCount());
+        }
+        return list;
+    }
     //start to check
     public static int checkName(String name){
         //TODO 检查名，只能含有汉字或者英文字符

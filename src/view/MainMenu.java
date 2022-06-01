@@ -1,14 +1,13 @@
 package view;
 
-import model.dao.StudentDAO;
-import model.entity.Student;
-import util.ShowMessageUtil;
+import model.entity.ClubMember;
+import service.ClubMemberService;
+import service.ClubService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.ArrayList;
 
 
 /*
@@ -20,12 +19,12 @@ public class MainMenu implements ActionListener {
     private JFrame mainmenu;
     private JMenu menuFile1, menuFile2, menuFile3;
     private JMenuBar menuBar1;
-    private JMenuItem addStudentInfo, queryStudentInfo, modifyPassword, Exit, Reload;
+    private JMenuItem addClubInfo, queryClubInfo, modifyPassword, Exit, Reload;
     private JMenuItem importExcel, importTxt, outputExcel, outputTxt;
     private JMenuItem aboutSystem, help;
     private Login login_gui = null;
-    private AddStudentInfo addStudent = null;
-    private QueryStudentInfo queryStudent = null;
+    private AddClubInfo addClub = null;
+    private QueryClubInfo queryClubinfo = null;
     private ModifyPasswordInfo modifyPasswordInfo = null;
     private ImportExcel importExcelInfo = null;
     private ImportTxt importTxtInfo = null;
@@ -46,10 +45,11 @@ public class MainMenu implements ActionListener {
         mainmenu.setVisible(b);
     }
 
-    private void initImgs() {
+    private void initImages() {
         if (imgs == null) {
             File file = new File(IMG_PATH);
             File[] files = file.listFiles();    //TODO 列出所有图片
+            assert files != null;
             imgs = new ImageIcon[files.length];
             for (int i = 0; i < files.length; i++) {
                 imgs[i] = new ImageIcon(files[i].getPath());
@@ -58,27 +58,14 @@ public class MainMenu implements ActionListener {
     }
 
     public void mainmenu() {
-        initImgs();
-        Thread sub_task = new Thread(() -> {
-            try (StudentDAO studentDAO = StudentDAO.getInstance()) {
-                Student.students = studentDAO.getAllStudent();
-                if (Student.students == null) {
-                    ShowMessageUtil.winMessage("数据库暂时为空");
-                    Student.students = new ArrayList<>();
-                } else {
-                    ShowMessageUtil.winMessage("数据库数据读取完成！");
-                }
-            }
-        });
-        sub_task.start(); //TODO 启动线程从MySQL数据库中获取数据并更新Student.students
-
+        initImages();
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");// 使用windows外观
         } catch (Exception e) {
             e.printStackTrace();
         }
         Color bgk_color = new Color(0xE6F7FA);
-        mainmenu = new JFrame("欢迎使用学生信息管理系统 made by L_B__");
+        mainmenu = new JFrame("欢迎使用社团信息管理系统 made by L_B__");
         mainmenu.setSize(1200, 785);
         mainmenu.setIconImage(Toolkit.getDefaultToolkit().getImage("src/images/logo.png"));
         mainmenu.getContentPane().setBackground(bgk_color);
@@ -87,7 +74,7 @@ public class MainMenu implements ActionListener {
         myJPanel.setBounds(0, 220, 1200, 500);
         mainmenu.setResizable(false);//窗口不可变
 
-        JLabel welcome_text = new JLabel("欢迎使用学生信息管理系统");
+        JLabel welcome_text = new JLabel("欢迎使用社团信息管理系统");
         Font font_welcome = new Font("楷体", Font.BOLD, 40);
         welcome_text.setFont(font_welcome);
         welcome_text.setBounds(350, 50, 500, 50);
@@ -144,26 +131,26 @@ public class MainMenu implements ActionListener {
         mainmenu.getContentPane().add(sponsor_text);
 
 
-        //TODO wechat收款码
+        //wechat收款码
         JLabel wechat = new JLabel();
         wechat.setIcon(new ImageIcon("src/images/wechat.png"));
         wechat.setBounds(980, 50, 119, 119);
         mainmenu.getContentPane().add(wechat);
 
-        Font cao_font = new Font("方正黄草_GBK", Font.BOLD, 30);
-        JLabel first_poem = new JLabel();
-        first_poem.setText("书山有路勤为径");
-        first_poem.setFont(cao_font);
-        first_poem.setForeground(new Color(0xEA5A91));
-        first_poem.setBounds(20, 100, 300, 40);
-        mainmenu.getContentPane().add(first_poem);
-
-        JLabel second_poem = new JLabel();
-        second_poem.setText("学海无涯苦作舟");
-        second_poem.setForeground(new Color(0xf19983));
-        second_poem.setFont(cao_font);
-        second_poem.setBounds(20, 150, 300, 40);
-        mainmenu.getContentPane().add(second_poem);
+//        Font cao_font = new Font("方正黄草_GBK", Font.BOLD, 30);
+//        JLabel first_poem = new JLabel();
+//        first_poem.setText("书山有路勤为径");
+//        first_poem.setFont(cao_font);
+//        first_poem.setForeground(new Color(0xEA5A91));
+//        first_poem.setBounds(20, 100, 300, 40);
+//        mainmenu.getContentPane().add(first_poem);
+//
+//        JLabel second_poem = new JLabel();
+//        second_poem.setText("学海无涯苦作舟");
+//        second_poem.setForeground(new Color(0xf19983));
+//        second_poem.setFont(cao_font);
+//        second_poem.setBounds(20, 150, 300, 40);
+//        mainmenu.getContentPane().add(second_poem);
 
         //====================>基本操作
         menuFile1 = new JMenu("基本操作(0)");
@@ -176,15 +163,15 @@ public class MainMenu implements ActionListener {
 
         menuBar1 = new JMenuBar();
 
-        addStudentInfo = new JMenuItem("增加", new ImageIcon("src/images/icons/add.png"));
-        addStudentInfo.setMnemonic('A');
-        addStudentInfo.setAccelerator(KeyStroke.getKeyStroke('A', InputEvent.CTRL_DOWN_MASK));
-        menuFile1.add(addStudentInfo);
+        addClubInfo = new JMenuItem("增加", new ImageIcon("src/images/icons/add.png"));
+        addClubInfo.setMnemonic('A');
+        addClubInfo.setAccelerator(KeyStroke.getKeyStroke('A', InputEvent.CTRL_DOWN_MASK));
+        menuFile1.add(addClubInfo);
 
-        queryStudentInfo = new JMenuItem("查询", new ImageIcon("src/images/icons/query.png"));
-        queryStudentInfo.setMnemonic('Q');
-        queryStudentInfo.setAccelerator(KeyStroke.getKeyStroke('Q', InputEvent.CTRL_DOWN_MASK));
-        menuFile1.add(queryStudentInfo);
+        queryClubInfo = new JMenuItem("查询", new ImageIcon("src/images/icons/query.png"));
+        queryClubInfo.setMnemonic('Q');
+        queryClubInfo.setAccelerator(KeyStroke.getKeyStroke('Q', InputEvent.CTRL_DOWN_MASK));
+        menuFile1.add(queryClubInfo);
 
         modifyPassword = new JMenuItem("密码修改", new ImageIcon("src/images/icons/modifyPassword.png"));
         modifyPassword.setMnemonic('M');
@@ -246,22 +233,22 @@ public class MainMenu implements ActionListener {
         menuBar1.add(menuFile3);
 
 
-        addStudentInfo.addActionListener(e -> {
-            System.out.println("=======>用户选择了‘添加学生信息’菜单项");
-            if (addStudent == null)
-                addStudent = new AddStudentInfo();
+        addClubInfo.addActionListener(e -> {
+            System.out.println("=======>用户选择了‘添加社团信息’菜单项");
+            if (addClub == null)
+                addClub = new AddClubInfo();
             else {
-                addStudent.setVisible(true);
+                addClub.setVisible(true);
             }
         });
 
 
-        queryStudentInfo.addActionListener(e -> {
+        queryClubInfo.addActionListener(e -> {
             System.out.println("=======>用户选择了‘查询学生信息’菜单项");
-            if (queryStudent == null)
-                queryStudent = new QueryStudentInfo();
+            if (queryClubinfo == null)
+                queryClubinfo = new QueryClubInfo();
             else {
-                queryStudent.setVisible(true);
+                queryClubinfo.setVisible(true);
             }
         });
 
@@ -286,7 +273,7 @@ public class MainMenu implements ActionListener {
             if (login_gui != null) {
                 login_gui.setVisible(true);
                 if (aboutSystem != null) aboutSystem.setVisible(false);
-                if (addStudentInfo != null) addStudentInfo.setVisible(false);
+                if (addClubInfo != null) addClubInfo.setVisible(false);
                 if (help != null) help.setVisible(false);
                 if (importTxt != null) importTxt.setVisible(false);
                 if (importExcel != null) importExcel.setVisible(false);
@@ -354,8 +341,8 @@ public class MainMenu implements ActionListener {
         mainmenu.setJMenuBar(menuBar1);
         mainmenu.setVisible(true);
         mainmenu.setLocation(40, 0);
-        addStudentInfo.addActionListener(this);
-        queryStudentInfo.addActionListener(this);
+        addClubInfo.addActionListener(this);
+        queryClubInfo.addActionListener(this);
         modifyPassword.addActionListener(this);
         Exit.addActionListener(this);
         importExcel.addActionListener(this);
