@@ -3,6 +3,7 @@ package view;
 import model.entity.Club;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import service.ClubService;
+import util.ExcleUtil;
 import util.MessageUtil;
 
 import javax.swing.*;
@@ -11,9 +12,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 public class QueryClubInfo extends JFrame implements ActionListener {
+    private static QueryClubInfo instance;
     private final JScrollPane panel;
     //进行具体操作的按钮
     private final JButton normalOrder;
@@ -26,15 +29,12 @@ public class QueryClubInfo extends JFrame implements ActionListener {
     private final JButton exportExcelBtn;
     private final JButton backBtn;
     private final JTable table;
-    public String[] columnNames = {"社团id", "社团名称", "社团类型","社团总人数"};
+    public String[] columnNames = {"社团id", "社团名称", "社团类型", "社团总人数"};
     public DefaultTableModel model = null;//默认的表格控制模型
-
     JLabel labelName;
     JTextField inputName;
-    /*
-     * 窗体及表的建立
-     */
-    public QueryClubInfo() {
+
+    private QueryClubInfo() {
         super("社团信息查询统计");
         this.setIconImage(Toolkit.getDefaultToolkit().getImage("src/images/logo.png"));
         this.setSize(1040, 680);
@@ -75,18 +75,18 @@ public class QueryClubInfo extends JFrame implements ActionListener {
         panel.setBounds(42, 136, 950, 420);
 
 
-
-        queryMembers = new JButton("查询成员");
+        queryMembers = new JButton("查询社团成员");
         queryMembers.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.red));
-        queryMembers.setBounds(400,570,90,30);
+        queryMembers.setBounds(400, 570, 110, 30);
 
         normalOrder = new JButton("升序排序");
         normalOrder.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
-        normalOrder.setBounds(300,570,90,30);
+        normalOrder.setBounds(300, 570, 90, 30);
 
         reverseOrder = new JButton("降序排序");
-        reverseOrder.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));;
-        reverseOrder.setBounds(200,570,90,30);
+        reverseOrder.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.normal));
+
+        reverseOrder.setBounds(200, 570, 90, 30);
 
         updateBtn = new JButton("更新");
         updateBtn.setUI(new BEButtonUI()
@@ -134,36 +134,34 @@ public class QueryClubInfo extends JFrame implements ActionListener {
 
         this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         this.setLocationRelativeTo(null);
-        this.setVisible(true);
-
-        showAllStudent();
     }
 
-    /**
-     * @param args
-     */
+    public static QueryClubInfo getInstance() {
+        if (instance == null) {
+            instance = new QueryClubInfo();
+        }
+        return instance;
+    }
+
     public static void main(String[] args) {
-        // TODO Auto-generated method stub
-
-        QueryClubInfo q = new QueryClubInfo();
+        getInstance().reset();
     }
 
-
-
+    public void reset() {
+        showAll();
+        inputName.setText("");
+        setVisible(true);
+    }
 
     /**
-     * 获得原始数据集
-     *
-     * @param clubs
-     * @return String sId, String sName, String sSex, String sBirthday,
-     * String sProvince, String sHobby, String sPhone
+     * 根据List数据生成对应的Object数据
      */
     public Object[][] getData(List<Club> clubs) {
         if (clubs.size() > 0) {
             Object[][] data = new Object[clubs.size()][columnNames.length];
-            for (int i = 0;i<clubs.size();i++) {
+            for (int i = 0; i < clubs.size(); i++) {
                 Club s = clubs.get(i);
-                Object[] a = {s.getId(), s.getName(), s.getCategory(),s.getMemberCount()};
+                Object[] a = {s.getId(), s.getName(), s.getCategory(), s.getMemberCount()};
                 data[i] = a;//把数组的值赋给二维数组的一行
             }
             return data;
@@ -172,27 +170,26 @@ public class QueryClubInfo extends JFrame implements ActionListener {
     }
 
 
-    public void showAllStudent() {
+    public void showAll() {
         List<Club> list = ClubService.QueryAllClub();
-        System.out.println(list);
         Object[][] data = getData(list);
-        initTable(data);
+        createTable(data);
     }
 
     /**
      * 初始化表格数据
      */
-    public void initTable(Object[][] data) {
-        if(model==null){
+    public void createTable(Object[][] data) {
+        if (model == null) {
             DefaultTableCellRenderer r = new DefaultTableCellRenderer();
             r.setHorizontalAlignment(JLabel.CENTER);
             table.setDefaultRenderer(Object.class, r);
         }
 
         //让id不可编辑
-        model = new DefaultTableModel(data, columnNames){
+        model = new DefaultTableModel(data, columnNames) {
             @Override
-            public boolean isCellEditable(int row,int column){
+            public boolean isCellEditable(int row, int column) {
                 return column != 0;
             }
         };
@@ -200,52 +197,63 @@ public class QueryClubInfo extends JFrame implements ActionListener {
         table.setRowHeight(20);
     }
 
-    private void doQuery(){
+    private void doQuery() {
         String name = inputName.getText();
-        try{
-            initTable(getData(ClubService.QueryClubsByName(name)));
-        }catch (RuntimeException e){
+        try {
+            createTable(getData(ClubService.QueryClubsByName(name)));
+        } catch (RuntimeException e) {
             e.printStackTrace();
             MessageUtil.Warning(e.getMessage());
         }
     }
 
-    Club getClubByChoose(){
+    Club getClubByChoose() {
         Club c = new Club();
         int row = table.getSelectedRow();
-        if(row==-1){
+        if (row == -1) {
             throw new RuntimeException("请选择你要操作的对象");
         }
-        int id = Integer.parseInt(table.getValueAt(row,0).toString());//会抛运行时异常
-        String name = table.getValueAt(row,1).toString();
-        String category = table.getValueAt(row,2).toString();
-        int count = Integer.parseInt(table.getValueAt(row,3).toString());
+        int id = Integer.parseInt(table.getValueAt(row, 0).toString());//会抛运行时异常
+        String name = table.getValueAt(row, 1).toString();
+        String category = table.getValueAt(row, 2).toString();
+        int count = Integer.parseInt(table.getValueAt(row, 3).toString());
         c.setId(id).setName(name).setCategory(category).setMemberCount(count);
         System.out.println(c);
         return c;
     }
 
-    //TODO
-    private void doQueryMember(){
-
+    private void doQueryMember() {
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            throw new RuntimeException("请选择需要查看的社团");
+        }
+        int id = Integer.parseInt(table.getValueAt(row, 0).toString());//会抛运行时异常
+        QueryMemberInfo.getInstance(id).reset();
     }
-    private void doUpdate(){
+
+    private void doUpdate() {
         try {
             ClubService.UpdateClub(getClubByChoose());
         } catch (RuntimeException e) {
             e.printStackTrace();
             MessageUtil.Warning(e.getMessage());
+            return;
         }
+        MessageUtil.Info("更新成功");
     }
-    private void doDelete(){
+
+    private void doDelete() {
         try {
             ClubService.DeleteClub(getClubByChoose());
         } catch (RuntimeException e) {
             e.printStackTrace();
             MessageUtil.Warning(e.getMessage());
-            showAllStudent();
+            showAll();
+            return;
         }
+        MessageUtil.Info("删除成功");
     }
+
     /**
      * 按钮事件
      */
@@ -256,48 +264,55 @@ public class QueryClubInfo extends JFrame implements ActionListener {
         if (button.equals(query)) {
             System.out.println("=============>开始根据名称模糊查询...");
             doQuery();
-        }
-        else if (button.equals(queryAll)) {
+        } else if (button.equals(queryAll)) {
             System.out.println("=============>开始查询所有学生...");
-            showAllStudent();
-        }
-        else if(button.equals(normalOrder)){
+            showAll();
+        } else if (button.equals(normalOrder)) {
             System.out.println("===============>开始顺序排序");
             try {
-                initTable(getData(ClubService.QueryAllClubByOrder(true)));
+                createTable(getData(ClubService.QueryAllClubByOrder(true)));
             } catch (RuntimeException exception) {
                 exception.printStackTrace();
                 MessageUtil.Warning(exception.getMessage());
             }
-        }
-        else if(button.equals(reverseOrder)){
+        } else if (button.equals(reverseOrder)) {
             System.out.println("=======================>开始降序排序");
             try {
-                initTable(getData(ClubService.QueryAllClubByOrder(false)));
+                createTable(getData(ClubService.QueryAllClubByOrder(false)));
             } catch (RuntimeException exception) {
                 exception.printStackTrace();
                 MessageUtil.Warning(exception.getMessage());
             }
-        }
-        else if(button.equals(queryMembers)){
+        } else if (button.equals(queryMembers)) {
             System.out.println("==============================>开始查询社团的成员");
-            doQueryMember();
-        }
-        else if (button.equals(updateBtn)) {
+            try {
+                doQueryMember();
+            } catch (RuntimeException exception) {
+                exception.printStackTrace();
+                MessageUtil.Warning(exception.getMessage());
+            }
+        } else if (button.equals(updateBtn)) {
             System.out.println("===============================>开始更新社团信息");
             doUpdate();
-            showAllStudent();
-        }
-        else if (button.equals(deleteBtn)) {
+            showAll();
+        } else if (button.equals(deleteBtn)) {
             System.out.println("===========================>开始删除操作");
             doDelete();
-            showAllStudent();
-        }
-        else if (button.equals(exportExcelBtn)) {
-
-        }
-        else if(button.equals(backBtn)){
+            showAll();
+        } else if (button.equals(exportExcelBtn)) {
+            System.out.println("===========================>开始导出Excle信息");
+            try {
+                doExportExcle();
+            } catch (IOException | RuntimeException exception) {
+                exception.printStackTrace();
+                MessageUtil.Warning(exception.getMessage());
+            }
+        } else if (button.equals(backBtn)) {
             setVisible(false);
         }
+    }
+
+    private void doExportExcle() throws IOException {
+        ExcleUtil.ExportClubToExcleUI();
     }
 }

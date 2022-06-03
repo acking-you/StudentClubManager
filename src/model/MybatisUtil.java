@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+//用于创建sql会话
 public class MybatisUtil {
     //在类加载时就进行创建
     private static SqlSessionFactory sqlSessionFactory;

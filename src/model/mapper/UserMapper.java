@@ -10,6 +10,6 @@ public interface UserMapper {
             "username=#{userName} and password=#{password}")
     int isUserExist(User user);
 
-    @Update("update users set password=#{password} where username=#{userName}")
+    @Update("update users set password=#{password} where username=#{username}")
     int modifyPassword(@Param("username") String userName, @Param("password") String password);
 }

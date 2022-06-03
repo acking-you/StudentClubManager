@@ -4,20 +4,17 @@ import model.dao.UserDAO;
 import model.entity.User;
 import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 import util.MD5Util;
+import util.MessageUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.IOException;
+import java.awt.event.*;
 
 public class Login extends JFrame implements ActionListener {
     public static String name_cache = null;
     public static String password_cache = null;
-
-    final ImageIcon[] imgs = {
+    public static Login instance;
+    final ImageIcon[] images = {
             new ImageIcon("src/images/1.jpg"),
             new ImageIcon("src/images/2.jpg"),
             new ImageIcon("src/images/3.jpg"),
@@ -27,11 +24,10 @@ public class Login extends JFrame implements ActionListener {
     MyJPanel mp;
     String username;
     String password;
-    private JButton load_btn = null;
-    private JButton exit_btn = null;
-    private JTextField username_text = null;
-    private JTextField passward_text = null;
-    private MainMenu mainMenu = null;
+    private final JButton load_btn;
+    private final JButton exit_btn;
+    private final JTextField username_text;
+    private final JTextField password_text;
 
     public Login() {
         setForeground(new Color(255, 255, 255));
@@ -74,8 +70,8 @@ public class Login extends JFrame implements ActionListener {
         username_text = new JTextField(20);
         username_text.setBounds(new Rectangle(520, 530, 200, 33));
 
-        passward_text = new JPasswordField();
-        passward_text.setBounds(new Rectangle(520, 570, 200, 33));
+        password_text = new JPasswordField();
+        password_text.setBounds(new Rectangle(520, 570, 200, 33));
 
         Font font2 = new Font("楷体", Font.BOLD, 15);
         JLabel jLabel_password = new JLabel();
@@ -125,7 +121,7 @@ public class Login extends JFrame implements ActionListener {
         jContentPane.add(load_btn, null);
         jContentPane.add(exit_btn, null);
         jContentPane.add(username_text, null);
-        jContentPane.add(passward_text, null);
+        jContentPane.add(password_text, null);
         jContentPane.add(jLabel_User, null);
         jContentPane.add(jLabel1, null);
         jContentPane.add(jLabel2, null);
@@ -133,110 +129,80 @@ public class Login extends JFrame implements ActionListener {
         jContentPane.add(jLabel4, null);
         jContentPane.add(jLabel5, null);
         getContentPane().add(jContentPane);
+        initListener();
+    }
 
-        username_text.addKeyListener(new KeyListener() {
+    public static Login getInstance() {
+        if (instance == null) {
+            instance = new Login();
+        }
+        return instance;
+    }
 
-            @Override
-            public void keyPressed(KeyEvent e) {
-            }
+    static private void LoginFailed() {
+        MessageUtil.Warning("用户或密码错误");
+    }
 
-            @Override
-            public void keyReleased(KeyEvent e) {
+    public static void main(String[] args) {
+        getInstance().reset();
+    }
 
+    public void reset() {
+        clearTxt();
+        setVisible(true);
+    }
 
-            }
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-                    passward_text.requestFocus();
-                }
-            }
-
+    public void initListener() {
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //开始画背景图片
+        final Timer timer = new Timer(2000, (e) -> {
+            mp.repaint();
         });
 
-        passward_text.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                // TODO Auto-generated method stub
-
-            }
-
+        //设置enter键可以进行登录触发
+        password_text.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyChar() == KeyEvent.VK_ENTER) {
+                if(e.getKeyChar()==KeyEvent.VK_ENTER){
                     LoginCheck();
                 }
             }
         });
-
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setVisible(true);
-
-        final Timer timer = new Timer(2000, (e) -> {
-            mp.repaint();
-        });
         timer.start();
-
         username_text.addActionListener(this);
-        passward_text.addActionListener(this);
+        password_text.addActionListener(this);
         load_btn.addActionListener(this);
         exit_btn.addActionListener(this);
     }
 
-    static private void LoginFailed() {
-        JOptionPane.showMessageDialog(null, "用户名和密码错误", "消息提示", JOptionPane.WARNING_MESSAGE);
-    }
-
-    public static void main(String[] args) {
-        new Login();
+    private void clearTxt() {
+        username_text.setText("");
+        password_text.setText("");
     }
 
     private void LoginSuccessful() {
-        if (mainMenu != null) {
-            username_text.setText("");
-            passward_text.setText("");
-            mainMenu.setVisible(true);
-        } else {
-            username_text.setText("");
-            passward_text.setText("");
-            mainMenu = new MainMenu(this);
-        }
+        setVisible(false);
+        MainMenu.getInstance().reset();
     }
 
     private void LoginCheck() {
         username = username_text.getText();
-        password = MD5Util.stringToMD5(passward_text.getText());
-
+        password = MD5Util.stringToMD5(password_text.getText());
         if (username.equals(name_cache) && password.equals(password_cache)) {
-            setVisible(false);
             LoginSuccessful();
         } else {
-            try (UserDAO userDao = UserDAO.getInstance()) {
-                if (userDao.isUserExist(new User().setUserName(username).setPassword(password)) > 0) {
-                    setVisible(false);
-                    LoginSuccessful();
-                    name_cache = username;
-                    password_cache = password;
-                } else {
-                    LoginFailed();
-                }
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
+            if (UserDAO.getInstance().isUserExist(new User().setUserName(username).setPassword(password)) > 0) {
+                LoginSuccessful();
+                name_cache = username;
+                password_cache = password;
+            } else {
+                LoginFailed();
             }
         }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (e.getSource() == load_btn) {
             LoginCheck();
         } else if (e.getSource() == exit_btn) {
@@ -252,7 +218,7 @@ public class Login extends JFrame implements ActionListener {
             if (index > 100000)
                 index = 0;
             super.paint(g);
-            g.drawImage(imgs[index % imgs.length].getImage(), 0, 0, this);
+            g.drawImage(images[index % images.length].getImage(), 0, 0, this);
             index++;
         }
     }

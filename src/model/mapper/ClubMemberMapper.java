@@ -22,7 +22,7 @@ public interface ClubMemberMapper {
     //模糊查询返回对应的成员
     @Select("SELECT c.* FROM club_member_relations r, club_members c " +
             "WHERE r.club_member_id = c.id AND r.club_id=#{clubId} AND c.`name` LIKE '%${name}%';")
-    List<ClubMember> queryClubMemberByName(@Param("clubId")int clubId,@Param("name")String name);
+    List<ClubMember> queryClubMemberByName(@Param("clubId") int clubId, @Param("name") String name);
 
     @Select("SELECT c.* FROM club_member_relations r, club_members c " +
             "WHERE r.club_id=#{clubId} AND c.id = r.club_member_id;")

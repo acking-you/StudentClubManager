@@ -10,10 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.sql.SQLException;
 
 public class ModifyPasswordInfo implements ActionListener {
+    private static ModifyPasswordInfo instance;
     private final JPasswordField old_text = new JPasswordField();
     private final JPasswordField new_text = new JPasswordField();
     private final JPasswordField query_text = new JPasswordField();
@@ -26,8 +26,7 @@ public class ModifyPasswordInfo implements ActionListener {
     private final JButton back = new JButton("返回");
     Font fnt = new Font("微软雅黑", Font.PLAIN + Font.BOLD, 17);
 
-
-    public ModifyPasswordInfo() {
+    private ModifyPasswordInfo() {
         this.frame.setIconImage(Toolkit.getDefaultToolkit().getImage("src/images/logo.png"));
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");// 使用windows外观
@@ -64,8 +63,6 @@ public class ModifyPasswordInfo implements ActionListener {
         this.frame.setLayout(null);
         this.frame.setSize(450, 430);
         this.frame.setLocation(400, 100);
-        // this.frame.getContentPane().setBackground(Color.green);
-        this.frame.setVisible(true);
         this.frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 frame.setVisible(false);
@@ -76,8 +73,22 @@ public class ModifyPasswordInfo implements ActionListener {
         this.back.addActionListener(this);
     }
 
+    public static ModifyPasswordInfo getInstance() {
+        if (instance == null) {
+            instance = new ModifyPasswordInfo();
+        }
+        return instance;
+    }
+
     public static void main(String[] args) {
         ModifyPasswordInfo modifyPasswordInfo = new ModifyPasswordInfo();
+    }
+
+    public void reset() {
+        old_text.setText("");
+        query_text.setText("");
+        new_text.setText("");
+        setVisible(true);
     }
 
     public void setVisible(boolean f) {
@@ -98,14 +109,10 @@ public class ModifyPasswordInfo implements ActionListener {
                 JOptionPane.showMessageDialog(null, "两次密码不一致，请检查", "消息提示",
                         JOptionPane.WARNING_MESSAGE);
             } else {
-                try (UserDAO ud = UserDAO.getInstance()) {
-                    try {
-                        ud.modifyPassword(new_psw);
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                try {
+                    UserDAO.getInstance().modifyPassword(new_psw);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
                 Login.password_cache = MD5Util.stringToMD5(new_psw);
                 JOptionPane.showMessageDialog(null, "修改成功", "消息提示",

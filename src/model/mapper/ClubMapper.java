@@ -19,7 +19,7 @@ public interface ClubMapper {
     void updateClub(@Param("club") Club club);
 
     @Update("UPDATE clubs SET member_count = member_count+${increment} WHERE id=#{id};")
-    void plusMemberCountById(@Param("id") int id,@Param("increment") int increment);
+    void plusMemberCountById(@Param("id") int id, @Param("increment") int increment);
 
     @Update("UPDATE clubs SET member_count = member_count-1 WHERE id=#{id};")
     void minusMemberCountById(int id);
@@ -45,5 +45,5 @@ public interface ClubMapper {
 
     //通过id和name同时定位来判断是否会发生update的重复
     @Select("SELECT COUNT(*) FROM clubs WHERE name = #{name} AND id = #{id};")
-    int countByDuplicate(@Param("id") int id,@Param("name") String name);
+    int countByDuplicate(@Param("id") int id, @Param("name") String name);
 }

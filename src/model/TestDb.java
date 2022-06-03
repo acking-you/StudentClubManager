@@ -1,12 +1,7 @@
 package model;
 
-import model.dao.ClubDAO;
 import model.dao.ClubMemberDAO;
-import model.entity.Club;
 import model.entity.ClubMember;
-
-import javax.swing.*;
-import java.util.List;
 
 public class TestDb {
 

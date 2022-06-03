@@ -1,4 +1,4 @@
-package view;
+package util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,7 +84,6 @@ public class LinkLabel extends JLabel {
             @Override   //TODO 鼠标移入事件
             public void mouseEntered(MouseEvent e) {
                 LinkLabel.this.setCursor(Cursor
-
                         .getPredefinedCursor(Cursor.HAND_CURSOR));
             }
 
